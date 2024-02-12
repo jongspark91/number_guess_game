@@ -85,6 +85,7 @@ function reset(){
     chanceArea.textContent = `Stars left: ${chanceCnt}`
     gameOver = false
     playButton.disabled = false
+    answerArea.textContent = ""
     history = []
     updateStars()
     return;
