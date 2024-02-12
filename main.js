@@ -1,72 +1,99 @@
-//게임 로직
-// 랜덤 번호 지정
-// 유저가 번호를 입력 그리고 go 버튼 클릭
-// 만약 유저가 랜덤 번호를 맞추면: 맞췄습니다!
-// 랜덤번호 < 유저번호: Down!
-// 랜덤번호 > 유저번호: up!!
-// reset버튼을 누르면 게임이 리셋
-// 5번 기회를 다 쓰면 게임이 끝 (더이상 추측 불가, 버틴 disabled)
-// 유저가 1~100 초과의 숫자를 입력하면 알려주고 기회를 깎지 않는다
-// 유저가 이미 입력한 숫자를 또 입력하면, 알려주고 기회를 깍지안는다
+// 사이트 접속시 1~100의 랜덤한 숫자 부여
+// 사용자가 1~100의 숫자 입력 후 Go 클릭
+// 숫자가 랜덤숫자보다 크면: Down!!, chance 차감
+// 숫자가 랜덤숫자보다 작으면: Up!!, chance 차감
+// 숫자가 맞으면: Correct
+// 숫자가 1~100범위가 넘어가면: 1~100사이의 범위를 입력해주세요, chance 미차감
+// Chance 숫자가 <1 되면: 실패! 마셔라 마셔라! go버튼 disabled
+// 리셋버튼 클릭시 랜덤숫자와 chance 초기화
 
-let computerNum = 0
-let playButton = document.getElementById("play-button")
-let userInput = document.getElementById("user-input")
+let randomNum = 0
 let resultArea = document.getElementById("result-area")
-let resetButton = document.getElementById("reset-button")
-let chances = 5
-let gameOver = false
+let userValue = document.getElementById("user-value")
+let playButton = document.getElementById("play-button")
 let chanceArea = document.getElementById("chance-area")
-let history = [];
+let resetButton = document.getElementById("reset-button")
+let starArea = document.getElementById("star-area")
+let imgArea = document.getElementById("img-area")
+let answerArea = document.getElementById("answer-area")
+let chanceCnt = 5
+let gameOver = false
+let history = []
+let gameWon = false
 playButton.addEventListener("click", play)
 resetButton.addEventListener("click", reset)
-userInput.addEventListener("focus", function(){
-    userInput.value = "";
-})
-function pickRandomNum(){
-    computerNum = Math.floor(Math.random()*100)+1;
-    console.log(computerNum)
+userValue.addEventListener("focus", function(){
+    userValue.value = ""})
+updateStars()
+
+function generateRandomNum(){
+    randomNum = Math.floor(Math.random()*100)+1;
+    console.log(randomNum)
 }
-pickRandomNum()
+generateRandomNum()
 
 function play(){
-    let userValue = userInput.value;
-
-    if (userValue<1 || userValue>100){
-        resultArea.textContent="1과 100사이 숫자를 입력해 주세요"
-        return;
-    } 
-    if(history.includes(userValue)){
-        resultArea.textContent = "이미 입력한 숫자입니다 다른 숫자를 입력해주세요"
+    let userInput = userValue.value;
+    if(userInput > 100 || userInput<1){
+        resultArea.textContent = "Input number between 1 and 100!";
         return;
     }
-    chances -- ;
-    chanceArea.textContent = `Chances Count: ${chances}`
-    console.log("찬스 횟수", chances)
-    if (userValue < computerNum){
-        resultArea.textContent = "Up!!!"
-    }else if(userValue>computerNum){
-        resultArea.textContent = "Down!!"
+    if(history.includes(userInput)){
+        resultArea.textContent = `You already tried ${userInput}`;
+        return;
+    }
+    if(userInput < randomNum){
+        console.log("up")
+        resultArea.textContent = "Up!! Koopa has stolen a star!!"
+        imgArea.src = "koopa_gains_star.jpg"
+        chanceCnt --;
+        starArea.src = updateStars()
+        history.push(userInput)
+        chanceArea.textContent = `Stars left: ${chanceCnt}`
+    }else if(userInput > randomNum){
+        console.log("down")
+        resultArea.textContent = "Down!! Koopa has stolen a star!!"
+        imgArea.src = "koopa_gains_star.jpg"
+        chanceCnt --;
+        starArea.src = updateStars()
+        history.push(userInput)
+        chanceArea.textContent = `Stars left: ${chanceCnt}`
     }else{
-        resultArea.textContent = "Correct!!"
-        gameOver = true
-    }
-
-    history.push(userValue)
-
-    if (chances<1){
-        gameOver = true
-    }
-    if (gameOver == true){
+        resultArea.textContent = "Correct!! Koopa has been defeated"
+        imgArea.src = "mario_win.jpg"
         playButton.disabled = true
+        gameOver = true
+        gameWon = true
+    }
+    if(chanceCnt<1){
+        gameOver = true
+    }
+    if(gameOver === true && gameWon === false){
+        resultArea.textContent = "Koopa stole 5 stars!! Mario has been defeated!"
+        answerArea.textContent = `The answer was ${randomNum}`
+        playButton.disabled = true
+        imgArea.src = "koopa_win.jpg"
     }
 }
 
 function reset(){
-    //user input창이 정리되고
-    userInput.value = "";
-    // 새로운 번호가 생성되고
-    pickRandomNum();
-    resultArea.textContent = "결과값이 여기 나옵니다"
-    // 
+    userValue.value = ""
+    imgArea.src = "https://pbs.twimg.com/media/E4eJSVNUYAEiM9t?format=jpg&name=4096x4096"
+    generateRandomNum();
+    resultArea.textContent = "Mario will be defeated if Koopa steals 5 stars!"
+    chanceCnt = 5
+    chanceArea.textContent = `Stars left: ${chanceCnt}`
+    gameOver = false
+    playButton.disabled = false
+    history = []
+    updateStars()
+    return;
+}
+
+function updateStars() {
+    const starsContainer = document.getElementById('star-area');
+    starsContainer.innerHTML = ''; // 이전 하트들을 지움
+    for (let i = 0; i < chanceCnt; i++) {
+        starsContainer.insertAdjacentHTML("beforeend", `<img src = "mario_star.png" class = "star-size" >`)
+    }
 }

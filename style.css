@@ -1,0 +1,45 @@
+body{
+    background-image: url("mario_background.jpg");
+    font-family: 'ArcadeClassic', sans-serif;
+    color: white;
+    text-shadow: 3px 3px #000000;
+    height: 100%;
+    padding-top: 10px;
+}
+
+.img-size{
+    width: 750px;
+    height: 400px;
+}
+
+.game-container {
+    border: 5px solid rgb(255, 255, 255);
+    border-radius: 20px;
+    text-align: center;
+    background-color: rgba(74, 125, 201, 0.9);
+    padding-top: 50px;
+    padding-bottom: 50px;
+    margin-top: 50px;
+}
+
+.spacing-word{
+    word-spacing: 9px;
+}
+
+.result-text-sizing{
+    font-size: 30px;
+}
+
+.chance-text-sizing{
+    font-size: 25px;
+}
+
+.audio-container{
+    display: flex;
+
+}
+
+.star-size{
+    width: 50px;
+    height: 50px;
+}
